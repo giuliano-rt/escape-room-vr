@@ -14,15 +14,20 @@ objetos e resolver uma sequência de cinco enigmas encadeados até destrancar a 
 saída e atravessá-la.
 
 Cada enigma só pode ser resolvido com a informação liberada pelo anterior, então a sala
-funciona como um quebra-cabeça único em vez de cinco desafios soltos:
+funciona como um quebra-cabeça único em vez de quatro desafios soltos:
 
 | # | Enigma | O que o jogador faz | O que libera |
 |---|--------|---------------------|--------------|
-| 1 | **Gaveta da mesa** | Puxa a gaveta pelo puxador e pega o bilhete que está dentro; aproxima o bilhete do rosto para ler | A dica de que o quadro esconde algo |
-| 2 | **Quadro da parede** | Agarra o quadro e o retira da parede | Painel escondido: o padrão das alavancas (`CIMA BAIXO CIMA`) e os dois primeiros dígitos do cofre (`7 4 ? ?`) |
-| 3 | **Três alavancas** | Aciona as alavancas até reproduzir o padrão do painel | Luz verde acende e um display revela os dois últimos dígitos (`? ? 2 9`) |
-| 4 | **Teclado do cofre** | Digita `7429` no teclado numérico virtual | O cofre destranca e a porta dele abre, revelando o cartão-chave |
-| 5 | **Leitor da porta** | Encaixa o cartão-chave na fenda do leitor ao lado da porta | A porta final abre; atravessar o corredor = **vitória** |
+| — | *Gaveta da mesa* (dica) | Puxa a gaveta pelo puxador, pega o bilhete e o aproxima do rosto para ler | A dica de que o quadro esconde algo |
+| 1 | **Quadro da parede** | Agarra o quadro e o retira da parede | Painel escondido: o padrão das alavancas (`CIMA BAIXO CIMA`) e os dois primeiros dígitos do cofre (`7 4 ? ?`) |
+| 2 | **Três alavancas** | Aciona as alavancas até reproduzir o padrão do painel | Luz verde acende e um display revela os dois últimos dígitos (`? ? 2 9`) |
+| 3 | **Teclado do cofre** | Digita `7429` no teclado numérico virtual | O cofre destranca e a porta dele abre, revelando o cartão-chave |
+| 4 | **Leitor da porta** | Encaixa o cartão-chave na fenda do leitor ao lado da porta | A porta final abre; atravessar o corredor = **vitória** |
+
+O bilhete da gaveta é uma **dica, não uma tranca**: ele aponta para o quadro, mas quem
+for direto nele escapa sem nunca abrir a gaveta. Por isso o placar do HUD conta só os
+quatro enigmas obrigatórios — contar a dica fazia uma partida vencida terminar marcando
+"4/5", como se algo tivesse ficado para trás.
 
 Se o cronômetro chegar a zero antes disso, a partida termina em derrota. Nos dois casos
 aparece uma tela de fim com o tempo usado e um botão para jogar de novo.
@@ -119,7 +124,7 @@ Rodando pela linha de comando:
 "G:/Unity/6000.3.10f1/Editor/Unity.exe" -batchmode -projectPath . -runTests -testPlatform PlayMode -testResults results.xml -logFile tests.log
 ```
 
-Resultado atual: **14 testes, 14 aprovados**.
+Resultado atual: **17 testes, 17 aprovados**.
 
 A cena é construída por script (`EscapeRoomSceneBuilder`) e não montada à mão. Assim ela
 pode ser regerada do zero quando a planta da sala muda, e todo o posicionamento fica

@@ -51,6 +51,33 @@ namespace EscapeRoomVR.Tests
         }
 
         [Test]
+        public void Placar_nao_conta_o_bilhete_porque_ele_e_opcional()
+        {
+            var progress = new PuzzleProgress();
+
+            progress.Complete(PuzzleStep.NoteFound);
+
+            Assert.AreEqual(0, progress.RequiredCompletedCount,
+                "O bilhete e uma dica, nao deveria mexer no placar de enigmas.");
+            Assert.AreEqual(1, progress.CompletedCount,
+                "Mesmo opcional, a etapa deveria continuar registrada.");
+        }
+
+        [Test]
+        public void Escapar_sem_ler_o_bilhete_fecha_o_placar()
+        {
+            var progress = new PuzzleProgress();
+
+            // O caminho de quem vai direto ao quadro, sem abrir a gaveta.
+            foreach (var step in PuzzleProgress.RequiredSteps)
+                progress.Complete(step);
+
+            Assert.AreEqual(PuzzleProgress.RequiredStepCount, progress.RequiredCompletedCount,
+                "Quem escapou deveria ver o placar completo, mesmo pulando a dica.");
+            Assert.IsFalse(progress.IsCompleted(PuzzleStep.NoteFound));
+        }
+
+        [Test]
         public void Reset_limpa_o_progresso()
         {
             var progress = new PuzzleProgress();

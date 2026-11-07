@@ -3,6 +3,7 @@ using System.Linq;
 using EscapeRoomVR.Core;
 using EscapeRoomVR.Interaction;
 using EscapeRoomVR.Puzzles;
+using EscapeRoomVR.UI;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -201,6 +202,42 @@ namespace EscapeRoomVR.Tests
                 "O socket deveria aceitar o cartao quando ele e solto na fenda.");
         }
 
+        /// <summary>
+        /// O painel do HUD tem de ficar na altura dos olhos quando o jogador
+        /// olha para baixo, senão ele se coloca justamente entre o jogador e a
+        /// gaveta, o teclado e tudo mais que se manipula abaixo da linha
+        /// dos olhos.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator HUD_nao_acompanha_o_olhar_para_baixo()
+        {
+            var hud = Find<LazyFollow>();
+            var cabeca = Camera.main;
+
+            Assert.IsNotNull(cabeca, "Camera principal nao encontrada.");
+
+            // Sem isso o rastreamento simulado reescreve a rotacao da camera a
+            // cada frame e o teste nao consegue "olhar para baixo".
+            DesligarRastreamentoDaCabeca(cabeca.gameObject);
+
+            cabeca.transform.rotation = Quaternion.identity;
+            yield return null;
+            yield return null;
+
+            float alturaOlhandoReto = hud.transform.position.y;
+
+            // Olha bem para baixo, como quem procura algo dentro da gaveta.
+            cabeca.transform.rotation = Quaternion.Euler(60f, 0f, 0f);
+
+            for (int i = 0; i < 60; i++)
+                yield return null;
+
+            float alturaOlhandoParaBaixo = hud.transform.position.y;
+
+            Assert.AreEqual(alturaOlhandoReto, alturaOlhandoParaBaixo, 0.05f,
+                "O painel deveria manter a altura quando o jogador abaixa a cabeca.");
+        }
+
         [UnityTest]
         public IEnumerator Bilhete_e_cartao_ganham_fisica_depois_de_soltos()
         {
@@ -261,6 +298,25 @@ namespace EscapeRoomVR.Tests
         // ------------------------------------------------------------------
         // Apoio
         // ------------------------------------------------------------------
+
+        /// <summary>
+        /// Desliga o que estiver dirigindo a pose da câmera (o driver de
+        /// tracking e o simulador), para o teste poder posicionar a cabeça.
+        /// </summary>
+        private static void DesligarRastreamentoDaCabeca(GameObject camera)
+        {
+            foreach (var comportamento in camera.GetComponents<MonoBehaviour>())
+            {
+                if (comportamento.GetType().Name.Contains("TrackedPoseDriver"))
+                    comportamento.enabled = false;
+            }
+
+            foreach (var raiz in SceneManager.GetActiveScene().GetRootGameObjects())
+            {
+                if (raiz.name.Contains("Simulator"))
+                    raiz.SetActive(false);
+            }
+        }
 
         private static T Find<T>() where T : Object => Object.FindFirstObjectByType<T>();
 
