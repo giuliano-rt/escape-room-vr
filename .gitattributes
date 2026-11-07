@@ -1,0 +1,26 @@
+* text=auto eol=lf
+
+# Arquivos YAML da Unity: tratados como texto, com o merge driver da Unity
+# (configure com: git config merge.unityyamlmerge.driver "<caminho>/UnityYAMLMerge" merge -p %O %B %A %A)
+*.unity       text eol=lf merge=unityyamlmerge
+*.prefab      text eol=lf merge=unityyamlmerge
+*.asset       text eol=lf merge=unityyamlmerge
+*.mat         text eol=lf merge=unityyamlmerge
+*.meta        text eol=lf merge=unityyamlmerge
+*.controller  text eol=lf merge=unityyamlmerge
+*.anim        text eol=lf merge=unityyamlmerge
+
+# Codigo e configuracao
+*.cs          text eol=lf diff=csharp
+*.shader      text eol=lf
+*.json        text eol=lf
+*.md          text eol=lf
+*.asmdef      text eol=lf
+*.inputactions text eol=lf
+
+# Binarios
+*.png  binary
+*.jpg  binary
+*.ttf  binary
+*.wav  binary
+*.fbx  binary
