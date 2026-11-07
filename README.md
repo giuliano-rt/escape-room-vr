@@ -230,6 +230,11 @@ do asset `XR Interaction Simulator Controls`:
 
 ### Rodar no Meta Quest
 
+> **Pré-requisito:** o Editor precisa do módulo **Android Build Support** (com OpenJDK e
+> Android SDK & NDK Tools), instalado pelo Unity Hub em *Add modules*. Sem ele o Unity
+> não gera o APK e nem deixa configurar o XR para Android — o menu
+> **2. Configurar projeto** avisa no console quando esse é o caso.
+
 1. No celular, abra o app **Meta Horizon** e ative o **modo desenvolvedor** na conta.
    Autorize também no próprio óculos.
 2. Ligue o Quest ao PC pelo cabo USB e aceite a depuração USB dentro do óculos.
