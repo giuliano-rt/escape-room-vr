@@ -56,6 +56,7 @@ namespace EscapeRoomVR.EditorTools
             EnsureFolders();
             ConfigureUniversalRenderPipeline();
             SampleMaterialConverter.ConvertToUniversalRenderPipeline();
+            ConfigureInteractionLayers();
             ConfigureQualityAndPhysics();
             ConfigurePlayerSettings();
             ConfigureOpenXR();
@@ -116,6 +117,51 @@ namespace EscapeRoomVR.EditorTools
             QualitySettings.renderPipeline = pipeline;
 
             EditorUtility.SetDirty(pipeline);
+        }
+
+        /// <summary>
+        /// Dá nome à camada de interação 31, usada pelo teletransporte.
+        ///
+        /// O Teleport Interactor dos Starter Assets vem configurado para
+        /// enxergar só essa camada. Ela nasce sem nome num projeto novo, o que
+        /// aparece como aviso no Project Validation do XRI; nomeá-la aqui
+        /// deixa a configuração versionada, em vez de depender de alguém
+        /// lembrar de clicar no botão "Fix".
+        /// </summary>
+        private static void ConfigureInteractionLayers()
+        {
+            const string path = "Assets/XRI/Settings/Resources/InteractionLayerSettings.asset";
+            const int teleportLayer = 31;
+            const string teleportName = "Teleport";
+
+            var settings = AssetDatabase.LoadAssetAtPath<ScriptableObject>(path);
+
+            if (settings == null)
+            {
+                Debug.LogWarning($"[ProjectConfigurator] {path} nao encontrado; " +
+                                 "nomeie a camada de interacao 31 como 'Teleport' manualmente.");
+                return;
+            }
+
+            var serialized = new SerializedObject(settings);
+            var names = serialized.FindProperty("m_LayerNames");
+
+            if (names == null || names.arraySize <= teleportLayer)
+            {
+                Debug.LogWarning("[ProjectConfigurator] Lista de camadas de interacao em formato inesperado.");
+                return;
+            }
+
+            var entry = names.GetArrayElementAtIndex(teleportLayer);
+
+            if (entry.stringValue == teleportName)
+                return;
+
+            entry.stringValue = teleportName;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(settings);
+
+            Debug.Log($"[ProjectConfigurator] Camada de interacao {teleportLayer} nomeada como '{teleportName}'.");
         }
 
         private static void ConfigureQualityAndPhysics()

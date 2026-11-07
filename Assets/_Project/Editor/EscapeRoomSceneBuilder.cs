@@ -57,6 +57,13 @@ namespace EscapeRoomVR.EditorTools
         private const float DoorHalfWidth = 0.55f;
         private const float DoorHeight = 2.1f;
 
+        /// <summary>
+        /// Camada de interacao usada pelo teletransporte. O Teleport Interactor
+        /// dos Starter Assets so enxerga esta camada; uma TeleportationArea
+        /// deixada na camada padrao e simplesmente ignorada pelo raio.
+        /// </summary>
+        private const int TeleportInteractionLayer = 31;
+
         // --- Solucao dos enigmas ---
         private const string SafeCode = "7429";
         private static readonly bool[] LeverPattern = { true, false, true };   // cima, baixo, cima
@@ -190,7 +197,7 @@ namespace EscapeRoomVR.EditorTools
             // O piso tambem e a area de teletransporte de dentro da sala.
             var floor = SceneBuildUtils.Box("Floor", root, new Vector3(0f, -0.05f, 0f),
                 new Vector3(width, 0.1f, depth), floorMat);
-            floor.AddComponent<TeleportationArea>();
+            AddTeleportArea(floor);
 
             SceneBuildUtils.Box("Ceiling", root, new Vector3(0f, RoomHeight + 0.05f, 0f),
                 new Vector3(width, 0.1f, depth), ceilingMat);
@@ -240,7 +247,7 @@ namespace EscapeRoomVR.EditorTools
 
             var floor = SceneBuildUtils.Box("Corridor Floor", root, new Vector3(0f, -0.05f, centerZ),
                 new Vector3(halfWidth * 2f, 0.1f, length), floorMat);
-            floor.AddComponent<TeleportationArea>();
+            AddTeleportArea(floor);
 
             SceneBuildUtils.Box("Corridor Ceiling", root, new Vector3(0f, RoomHeight + 0.05f, centerZ),
                 new Vector3(halfWidth * 2f, 0.1f, length), wallMat);
@@ -384,6 +391,10 @@ namespace EscapeRoomVR.EditorTools
             var noteGrab = note.gameObject.AddComponent<XRGrabInteractable>();
             noteGrab.movementType = XRBaseInteractable.MovementType.Instantaneous;
             noteGrab.throwOnDetach = false;
+
+            // Para de flutuar assim que o jogador o solta pela primeira vez.
+            SceneBuildUtils.SetField(note.gameObject.AddComponent<BecomesPhysicalOnGrab>(),
+                "physicalMass", 0.05f);
 
             var noteAudio = AddAudioCue(note.gameObject);
             var inspectable = note.gameObject.AddComponent<Inspectable>();
@@ -613,6 +624,9 @@ namespace EscapeRoomVR.EditorTools
             cardGrab.movementType = XRBaseInteractable.MovementType.Instantaneous;
             cardGrab.throwOnDetach = false;
 
+            SceneBuildUtils.SetField(card.gameObject.AddComponent<BecomesPhysicalOnGrab>(),
+                "physicalMass", 0.05f);
+
             var keyCard = card.gameObject.AddComponent<KeyCard>();
             SceneBuildUtils.SetField(keyCard, "cardId", "EXIT");
 
@@ -749,12 +763,22 @@ namespace EscapeRoomVR.EditorTools
             // perceber um objeto agarrado chegando perto.
             var slot = SceneBuildUtils.Empty("Card Slot", root, new Vector3(0f, -0.04f, 0.055f)).transform;
 
+            // A area de encaixe e bem maior que o cartao de proposito. Mirar um
+            // cartao de 9 x 6 cm numa fenda do mesmo tamanho, com a mao
+            // tremendo no ar, e frustrante; com uma caixa de 30 cm o jogador
+            // so precisa levar o cartao ate perto do leitor.
             var slotCollider = slot.gameObject.AddComponent<BoxCollider>();
             slotCollider.isTrigger = true;
-            slotCollider.size = new Vector3(0.16f, 0.12f, 0.12f);
+            slotCollider.size = new Vector3(0.3f, 0.3f, 0.3f);
 
             var socket = slot.gameObject.AddComponent<XRSocketInteractor>();
             socket.showInteractableHoverMeshes = false;
+
+            // Com o snap no hover, o cartao pula para dentro da fenda assim que
+            // chega perto, ainda na mao do jogador: ele ve que vai encaixar
+            // antes de soltar, em vez de tentar as cegas.
+            socket.hoverSocketSnapping = true;
+            socket.socketSnappingRadius = 0.18f;
 
             var indicatorRoot = SceneBuildUtils.Empty("Indicator", root, new Vector3(0.07f, 0.05f, 0.035f)).transform;
             var bulb = SceneBuildUtils.Sphere("Bulb", indicatorRoot, Vector3.zero, 0.035f, redMat, keepCollider: false);
@@ -993,6 +1017,17 @@ namespace EscapeRoomVR.EditorTools
             text.raycastTarget = false;
 
             return text;
+        }
+
+        /// <summary>
+        /// Marca uma superficie como destino de teletransporte, na camada de
+        /// interacao que o Teleport Interactor dos Starter Assets escuta.
+        /// Sem ajustar a camada, a area existe mas o raio nunca a encontra.
+        /// </summary>
+        private static void AddTeleportArea(GameObject floor)
+        {
+            var area = floor.AddComponent<TeleportationArea>();
+            area.interactionLayers = 1 << TeleportInteractionLayer;
         }
 
         private static AudioCue AddAudioCue(GameObject go)
