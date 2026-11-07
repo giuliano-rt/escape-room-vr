@@ -14,11 +14,48 @@ namespace EscapeRoomVR.Core
         /// <summary>Disparado quando uma etapa é concluída pela primeira vez.</summary>
         public event Action<PuzzleStep> StepCompleted;
 
-        /// <summary>Quantidade total de etapas da cadeia de enigmas.</summary>
+        /// <summary>
+        /// As etapas que realmente trancam o caminho até a saída.
+        ///
+        /// <see cref="PuzzleStep.NoteFound"/> fica de fora de propósito: o
+        /// bilhete da gaveta é uma dica, não uma tranca, e quem for direto ao
+        /// quadro escapa sem nunca lê-lo. Contá-lo no placar fazia uma
+        /// partida vencida terminar marcando "4/5", como se algo tivesse
+        /// ficado para trás.
+        /// </summary>
+        public static readonly PuzzleStep[] RequiredSteps =
+        {
+            PuzzleStep.PaintingRemoved,
+            PuzzleStep.LeversSolved,
+            PuzzleStep.SafeOpened,
+            PuzzleStep.CardInserted
+        };
+
+        /// <summary>Quantidade total de etapas, incluindo as opcionais.</summary>
         public static int TotalSteps => Enum.GetValues(typeof(PuzzleStep)).Length;
 
-        /// <summary>Quantas etapas já foram concluídas.</summary>
+        /// <summary>Quantos enigmas obrigatórios existem. É o total do placar.</summary>
+        public static int RequiredStepCount => RequiredSteps.Length;
+
+        /// <summary>Quantas etapas já foram concluídas, contando as opcionais.</summary>
         public int CompletedCount => completed.Count;
+
+        /// <summary>Quantos enigmas obrigatórios já foram resolvidos.</summary>
+        public int RequiredCompletedCount
+        {
+            get
+            {
+                int total = 0;
+
+                foreach (var step in RequiredSteps)
+                {
+                    if (completed.Contains(step))
+                        total++;
+                }
+
+                return total;
+            }
+        }
 
         /// <summary>True se a etapa já foi concluída.</summary>
         public bool IsCompleted(PuzzleStep step) => completed.Contains(step);

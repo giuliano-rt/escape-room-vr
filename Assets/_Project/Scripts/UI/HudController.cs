@@ -139,7 +139,7 @@ namespace EscapeRoomVR.UI
             if (progressLabel == null || game == null)
                 return;
 
-            progressLabel.text = $"Enigmas: {game.Progress.CompletedCount}/{PuzzleProgress.TotalSteps}";
+            progressLabel.text = $"Enigmas: {game.Progress.RequiredCompletedCount}/{PuzzleProgress.RequiredStepCount}";
         }
 
         private void RefreshObjective()
@@ -154,24 +154,33 @@ namespace EscapeRoomVR.UI
         /// Traduz o progresso no próximo objetivo em texto. Fica aqui, e não no
         /// GameManager, porque é apresentação e não regra de jogo.
         /// </summary>
+        /// <summary>
+        /// Traduz o progresso no próximo objetivo em texto. Fica aqui, e não no
+        /// GameManager, porque é apresentação e não regra de jogo.
+        ///
+        /// A checagem vai da última etapa para a primeira, e não o contrário,
+        /// porque o jogador pode pular a dica do bilhete e ir direto ao quadro.
+        /// Procurando pela etapa mais avançada que ele já concluiu, o objetivo
+        /// nunca fica para trás do que ele de fato já fez.
+        /// </summary>
         private static string NextObjectiveText(PuzzleProgress progress)
         {
-            if (!progress.IsCompleted(PuzzleStep.NoteFound))
-                return "Procure algo escrito na sala.";
+            if (progress.IsCompleted(PuzzleStep.CardInserted))
+                return "A porta esta aberta. Saia da sala!";
 
-            if (!progress.IsCompleted(PuzzleStep.PaintingRemoved))
-                return "O que o quadro esconde?";
-
-            if (!progress.IsCompleted(PuzzleStep.LeversSolved))
-                return "Repita o padrao do painel nas alavancas.";
-
-            if (!progress.IsCompleted(PuzzleStep.SafeOpened))
-                return "Digite o codigo de 4 digitos no cofre.";
-
-            if (!progress.IsCompleted(PuzzleStep.CardInserted))
+            if (progress.IsCompleted(PuzzleStep.SafeOpened))
                 return "Use o cartao no leitor da porta.";
 
-            return "A porta esta aberta. Saia da sala!";
+            if (progress.IsCompleted(PuzzleStep.LeversSolved))
+                return "Digite o codigo de 4 digitos no cofre.";
+
+            if (progress.IsCompleted(PuzzleStep.PaintingRemoved))
+                return "Repita o padrao do painel nas alavancas.";
+
+            if (progress.IsCompleted(PuzzleStep.NoteFound))
+                return "O que o quadro esconde?";
+
+            return "Procure algo escrito na sala.";
         }
     }
 }
