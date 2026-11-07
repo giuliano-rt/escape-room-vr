@@ -172,6 +172,55 @@ namespace EscapeRoomVR.Tests
             Assert.IsFalse(GameManager.Instance.Timer.IsRunning, "O cronometro deveria parar na vitoria.");
         }
 
+        /// <summary>
+        /// Leva o cartão até a fenda pelo caminho normal — movendo o objeto no
+        /// mundo — em vez de forçar o SelectEnter. É o que prova que a área de
+        /// encaixe tem tamanho suficiente e que o socket realmente percebe o
+        /// cartão chegando; forçar a selecção pularia exatamente essa parte.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator Leitor_percebe_o_cartao_quando_ele_chega_na_fenda()
+        {
+            var socket = Find<CardReader>().GetComponent<XRSocketInteractor>();
+            var card = Find<KeyCard>().GetComponent<XRGrabInteractable>();
+
+            Assert.IsFalse(socket.interactablesHovered.Contains(card),
+                "O cartao nao deveria estar na fenda antes de ser levado ate la.");
+
+            card.transform.position = socket.transform.position;
+            Physics.SyncTransforms();
+
+            yield return new WaitForFixedUpdate();
+            yield return null;
+
+            Assert.IsTrue(socket.interactablesHovered.Contains(card),
+                "O socket deveria perceber o cartao dentro da area de encaixe.");
+            // O cast escolhe a sobrecarga nova de CanSelect: a que recebe
+            // XRBaseInteractable esta obsoleta no XRI 3.
+            Assert.IsTrue(socket.CanSelect((IXRSelectInteractable)card),
+                "O socket deveria aceitar o cartao quando ele e solto na fenda.");
+        }
+
+        [UnityTest]
+        public IEnumerator Bilhete_e_cartao_ganham_fisica_depois_de_soltos()
+        {
+            foreach (var objeto in new[] { Find<Inspectable>().gameObject, Find<KeyCard>().gameObject })
+            {
+                var fisica = objeto.GetComponent<BecomesPhysicalOnGrab>();
+                var corpo = objeto.GetComponent<Rigidbody>();
+
+                Assert.IsNotNull(fisica, $"{objeto.name} deveria ter BecomesPhysicalOnGrab.");
+                Assert.IsTrue(corpo.isKinematic, $"{objeto.name} deveria comecar parado no lugar.");
+
+                fisica.MakePhysical();
+
+                Assert.IsFalse(corpo.isKinematic, $"{objeto.name} deveria virar corpo dinamico.");
+                Assert.IsTrue(corpo.useGravity, $"{objeto.name} deveria passar a cair.");
+            }
+
+            yield return null;
+        }
+
         [UnityTest]
         public IEnumerator Cadeia_completa_resolve_todos_os_cinco_enigmas()
         {

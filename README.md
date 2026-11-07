@@ -39,9 +39,10 @@ aparece uma tela de fim com o tempo usado e um botão para jogar de novo.
   real, sem sair do lugar nem atravessar o móvel.
 - **Abrir portas** — a porta do cofre e a porta final abrem por animação controlada,
   com som de destravamento e indicadores luminosos de estado.
-- **Encaixar itens em locais específicos** — o leitor de cartão usa um *socket*: o cartão
-  gruda na fenda, e o leitor valida se é o cartão certo (qualquer outro objeto é recusado
-  com som de erro).
+- **Encaixar itens em locais específicos** — o leitor de cartão usa um *socket*. O cartão
+  pula para dentro da fenda assim que chega perto, ainda na mão do jogador, para ele ver
+  que vai encaixar antes de soltar; o leitor então valida se é o cartão certo (qualquer
+  outro objeto é recusado com som de erro).
 - **Acionar alavancas** — três alavancas de duas posições, com animação do braço e som
   com variação de tom conforme sobem ou descem.
 - **Digitar códigos em teclado virtual** — teclado numérico de 12 teclas (0–9, `C`, `OK`),
@@ -53,8 +54,10 @@ aparece uma tela de fim com o tempo usado e um botão para jogar de novo.
 ### Física
 - Objetos manipuláveis com física real (massa, gravidade, arremesso): caneca, livros e
   uma bola de borracha.
-- Os itens que fazem parte dos enigmas são cinemáticos de propósito, para nunca
-  escorregarem para dentro de um móvel ou caírem através do cenário e travarem a partida.
+- O bilhete e o cartão-chave nascem parados no lugar, para não escorregarem para fora da
+  gaveta e do cofre antes de o jogador chegar neles — se o cartão cair atrás de um móvel,
+  a partida fica impossível de terminar. A partir do momento em que são soltos pela
+  primeira vez, passam a ser corpos físicos normais (`BecomesPhysicalOnGrab`).
 
 ### Áudio espacial
 - **Todos os efeitos sonoros são sintetizados em tempo de execução** por código
@@ -106,6 +109,9 @@ cadeia inteira por código**, do bilhete até a tela de vitória.
   começa rodando, que o quadro revela o painel, que as alavancas só resolvem na
   combinação certa, que o teclado recusa código errado e aceita `7429`, que o cofre abre,
   que o cartão no leitor abre a porta final e que atravessar a saída encerra com vitória.
+  Dois deles cobrem problemas encontrados jogando: um leva o cartão até a fenda movendo o
+  objeto no mundo (em vez de forçar a seleção, que mascarava o tamanho da área de
+  encaixe) e outro confirma que bilhete e cartão ganham física depois de soltos.
 
 Rodando pela linha de comando:
 
@@ -113,7 +119,7 @@ Rodando pela linha de comando:
 "G:/Unity/6000.3.10f1/Editor/Unity.exe" -batchmode -projectPath . -runTests -testPlatform PlayMode -testResults results.xml -logFile tests.log
 ```
 
-Resultado atual: **12 testes, 12 aprovados**.
+Resultado atual: **14 testes, 14 aprovados**.
 
 A cena é construída por script (`EscapeRoomSceneBuilder`) e não montada à mão. Assim ela
 pode ser regerada do zero quando a planta da sala muda, e todo o posicionamento fica
