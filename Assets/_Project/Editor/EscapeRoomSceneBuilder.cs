@@ -107,6 +107,7 @@ namespace EscapeRoomVR.EditorTools
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene, ScenePath);
             RegisterSceneInBuildSettings();
+            RememberSceneForNextEditorLaunch();
 
             Debug.Log($"[EscapeRoomSceneBuilder] Cena gerada em {ScenePath}. Codigo do cofre: {SafeCode}.");
         }
@@ -1040,6 +1041,34 @@ namespace EscapeRoomVR.EditorTools
 
             var existing = go.GetComponent<AudioCue>();
             return existing != null ? existing : go.AddComponent<AudioCue>();
+        }
+
+        /// <summary>
+        /// Deixa a cena gerada como a última cena aberta, para o Editor abrir
+        /// nela da próxima vez em vez de numa cena vazia.
+        ///
+        /// Quando o construtor roda em linha de comando, a Unity grava esse
+        /// registro vazio ao sair, e quem abre o projeto depois cai numa cena
+        /// "Untitled" sem entender por quê. O arquivo fica em Library/, que não
+        /// é versionado e a Unity reescreve sozinha — mexer nele aqui é só uma
+        /// conveniência, não altera o projeto.
+        /// </summary>
+        private static void RememberSceneForNextEditorLaunch()
+        {
+            try
+            {
+                System.IO.File.WriteAllText("Library/LastSceneManagerSetup.txt",
+                    "sceneSetups:\n" +
+                    $"- path: {ScenePath}\n" +
+                    "  isLoaded: 1\n" +
+                    "  isActive: 1\n" +
+                    "  isSubScene: 0\n");
+            }
+            catch (System.IO.IOException exception)
+            {
+                // Nao vale derrubar a geracao da cena por causa de uma comodidade.
+                Debug.LogWarning($"[EscapeRoomSceneBuilder] Nao deu para registrar a cena de abertura: {exception.Message}");
+            }
         }
 
         private static void RegisterSceneInBuildSettings()
