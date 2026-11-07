@@ -1,0 +1,57 @@
+﻿# ---------------------------------------------------------------
+# Unity
+# ---------------------------------------------------------------
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+
+# Pacotes resolvidos pelo Package Manager (manifest.json + packages-lock.json bastam)
+/[Aa]ssets/[Aa]ssetStoreTools*
+
+# Builds gerados
+*.apk
+*.aab
+*.unitypackage
+*.app
+
+# Saida da ferramenta de screenshots (as imagens do README ficam em docs/images)
+/Screenshots/
+
+# ---------------------------------------------------------------
+# Visual Studio / Rider / VS Code
+# ---------------------------------------------------------------
+.vs/
+.idea/
+.vscode/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# ---------------------------------------------------------------
+# Sistema operacional
+# ---------------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---------------------------------------------------------------
+# Crash reports
+# ---------------------------------------------------------------
+sysinfo.txt
+crashlytics-build.properties

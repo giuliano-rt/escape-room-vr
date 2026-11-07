@@ -1,0 +1,14 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 1
+    path: Assets/_Project/Scenes/EscapeRoom.unity
+    guid: 9d422cf47a5f2ed47b4fb97ff6f70b4c
+  m_configObjects:
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: d7ccba8fa9a9d6a4aa9d704c185a5df3, type: 2}
+    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 4a01508bf13ea37458ae3b13b6c14777, type: 2}
+  m_UseUCBPForAssetBundles: 0
