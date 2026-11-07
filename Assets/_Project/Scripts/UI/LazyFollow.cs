@@ -55,8 +55,9 @@ namespace EscapeRoomVR.UI
                 transform.position = Vector3.Lerp(transform.position, targetPosition, t);
             }
 
-            // O painel sempre encara o jogador, mesmo quando nao esta se movendo.
-            Vector3 lookDirection = transform.position - head.position;
+            // O painel encara o jogador girando so em torno do eixo vertical:
+            // inclinar junto com a cabeca deixaria o texto tombado.
+            Vector3 lookDirection = Vector3.ProjectOnPlane(transform.position - head.position, Vector3.up);
 
             if (lookDirection.sqrMagnitude > 0.0001f)
                 transform.rotation = Quaternion.LookRotation(lookDirection, Vector3.up);
@@ -73,9 +74,27 @@ namespace EscapeRoomVR.UI
             return true;
         }
 
+        /// <summary>
+        /// Posição de descanso do painel: à frente do jogador, mas usando só a
+        /// direção horizontal do olhar.
+        ///
+        /// Ignorar a inclinação da cabeça é o que tira o painel do caminho.
+        /// Se ele acompanhasse o olhar para baixo, ficaria exatamente entre o
+        /// jogador e tudo que ele tenta manipular — a gaveta, o teclado, os
+        /// objetos na mesa. Assim ele fica parado na altura dos olhos e sai de
+        /// cena sozinho quando o jogador abaixa a cabeça para interagir.
+        /// </summary>
         private Vector3 DesiredPosition()
         {
-            Vector3 forward = head.forward;
+            Vector3 forward = Vector3.ProjectOnPlane(head.forward, Vector3.up);
+
+            // Olhando quase reto para cima ou para baixo a projecao fica
+            // degenerada; nesse caso vale a direcao do topo da cabeca.
+            if (forward.sqrMagnitude < 0.0001f)
+                forward = Vector3.ProjectOnPlane(head.up, Vector3.up);
+
+            forward = forward.sqrMagnitude < 0.0001f ? Vector3.forward : forward.normalized;
+
             return head.position + forward * distance + Vector3.up * verticalOffset;
         }
 

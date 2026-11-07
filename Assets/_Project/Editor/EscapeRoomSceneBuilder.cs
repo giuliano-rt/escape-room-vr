@@ -853,11 +853,14 @@ namespace EscapeRoomVR.EditorTools
         {
             var root = SceneBuildUtils.Empty("HUD", null, new Vector3(0f, 1.25f, -1.0f)).transform;
 
+            // Mais longe e um pouco abaixo da linha dos olhos: o painel fica
+            // legivel de relance sem ocupar a area onde o jogador manipula as
+            // coisas, que e sempre perto e abaixo.
             var lazy = root.gameObject.AddComponent<LazyFollow>();
             SceneBuildUtils.SetFields(lazy,
-                "distance", 1.5f,
-                "verticalOffset", -0.38f,
-                "angleThreshold", 30f,
+                "distance", 2.1f,
+                "verticalOffset", -0.3f,
+                "angleThreshold", 35f,
                 "followSpeed", 2.5f);
 
             var canvasRect = CreateWorldCanvas("Canvas", root, new Vector2(900f, 420f), 0.0009f);
