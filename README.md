@@ -266,6 +266,11 @@ Se quiser reconstruir a sala (por exemplo depois de mudar medidas no
 `EscapeRoomSceneBuilder`), use o menu **Escape Room VR → 3. Gerar cena do Escape Room**.
 Isso **sobrescreve** `Assets/_Project/Scenes/EscapeRoom.unity`.
 
+> Cada regeração renumera os `fileID` de todos os objetos, então o `git diff` da cena
+> fica enorme mesmo quando nada mudou de verdade. Se a regeração foi só para conferir
+> algo, vale descartar o arquivo (`git checkout -- <cena>`) em vez de commitar milhares
+> de linhas sem conteúdo.
+
 ---
 
 ## Imagens
