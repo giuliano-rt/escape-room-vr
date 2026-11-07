@@ -23,6 +23,9 @@
 # Saida da ferramenta de screenshots (as imagens do README ficam em docs/images)
 /Screenshots/
 
+# Documentos de entrega da disciplina (nao fazem parte do projeto)
+/Entrega-*.docx
+
 # ---------------------------------------------------------------
 # Visual Studio / Rider / VS Code
 # ---------------------------------------------------------------
