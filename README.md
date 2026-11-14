@@ -278,13 +278,14 @@ Isso **sobrescreve** `Assets/_Project/Scenes/EscapeRoom.unity`.
 ## Vídeo da demonstração
 
 Uma partida completa, da sala trancada até a tela de vitória, gravada no PC com o
-**XR Interaction Simulator** no lugar do óculos (1920x1080, 30 fps, 1 minuto):
+**XR Interaction Simulator** no lugar do óculos — 1920x1080, 30 fps, 1 minuto.
 
-https://github.com/giuliano-rt/escape-room-vr/raw/main/docs/video/demo-escape-room-vr.mp4
+[![Demonstração do Escape Room VR — clique para assistir](docs/images/visao-geral.png)](https://github.com/giuliano-rt/escape-room-vr/raw/main/docs/video/demo-escape-room-vr.mp4)
 
-<video src="docs/video/demo-escape-room-vr.mp4" controls width="100%"></video>
+▶️ **[Assistir / baixar o vídeo (46 MB)](https://github.com/giuliano-rt/escape-room-vr/raw/main/docs/video/demo-escape-room-vr.mp4)**
 
-> Se o player acima não carregar no seu navegador, o arquivo está em
+> O GitHub não reproduz arquivos `.mp4` versionados dentro da página do README — o link
+> acima abre o arquivo direto. Ele está versionado em
 > [`docs/video/demo-escape-room-vr.mp4`](docs/video/demo-escape-room-vr.mp4).
 
 ---
