@@ -4,13 +4,15 @@ Projeto da disciplina **CIC904 — Multimídia e Realidade Virtual** (Prof. Isaa
 
 **Aluno:** Giuliano Rodrigues Tumoli — RA 21.00036-0
 
+▶️ **[Vídeo da demonstração](#vídeo-da-demonstração)** · 🖼️ **[Imagens](#imagens)** · 🔑 **[Solução dos enigmas](#solução-dos-enigmas-para-quem-for-avaliar)**
+
 ---
 
 ## Descrição do projeto
 
 Um jogo de *escape room* em Realidade Virtual, feito em **Unity 6** para o **Meta Quest**.
 O jogador acorda trancado numa sala e tem **10 minutos** para explorá-la, manipular os
-objetos e resolver uma sequência de cinco enigmas encadeados até destrancar a porta de
+objetos e resolver uma sequência de quatro enigmas encadeados até destrancar a porta de
 saída e atravessá-la.
 
 Cada enigma só pode ser resolvido com a informação liberada pelo anterior, então a sala
@@ -273,6 +275,20 @@ Isso **sobrescreve** `Assets/_Project/Scenes/EscapeRoom.unity`.
 
 ---
 
+## Vídeo da demonstração
+
+Uma partida completa, da sala trancada até a tela de vitória, gravada no PC com o
+**XR Interaction Simulator** no lugar do óculos (1920x1080, 30 fps, 1 minuto):
+
+https://github.com/giuliano-rt/escape-room-vr/raw/main/docs/video/demo-escape-room-vr.mp4
+
+<video src="docs/video/demo-escape-room-vr.mp4" controls width="100%"></video>
+
+> Se o player acima não carregar no seu navegador, o arquivo está em
+> [`docs/video/demo-escape-room-vr.mp4`](docs/video/demo-escape-room-vr.mp4).
+
+---
+
 ## Imagens
 
 Todas as capturas abaixo foram geradas pela ferramenta de screenshots do próprio projeto
@@ -290,16 +306,16 @@ Todas as capturas abaixo foram geradas pela ferramenta de screenshots do própri
 *Planta da sala vista de cima, com o teto escondido: mesa e cofre na parede oeste,
 alavancas na leste, quadro na sul e a porta de saída na norte.*
 
-### Os cinco enigmas
+### Os quatro enigmas
 
 | | |
 |---|---|
 | ![Mesa com a gaveta](docs/images/mesa-gaveta.png) | ![Painel escondido atrás do quadro](docs/images/quadro-revelado.png) |
-| **1.** A gaveta da mesa é puxada com a mão e guarda o bilhete | **2.** Atrás do quadro: o padrão das alavancas e os dois primeiros dígitos |
+| *Dica.* A gaveta da mesa é puxada com a mão e guarda o bilhete | **1.** Atrás do quadro: o padrão das alavancas e os dois primeiros dígitos |
 | ![Alavancas na parede](docs/images/alavancas.png) | ![Cofre e teclado numérico](docs/images/cofre-teclado.png) |
-| **3.** As três alavancas, com o indicador de estado abaixo delas | **4.** O cofre e o teclado numérico de 12 teclas |
+| **2.** As três alavancas, com o indicador de estado abaixo delas | **3.** O cofre e o teclado numérico de 12 teclas |
 | ![Cofre aberto com o cartão-chave](docs/images/cofre-aberto.png) | ![Porta de saída e leitor de cartão](docs/images/porta-leitor.png) |
-| O cofre aberto, com o cartão-chave dentro | **5.** A porta de saída e o leitor onde o cartão é encaixado |
+| O cofre aberto, com o cartão-chave dentro | **4.** A porta de saída e o leitor onde o cartão é encaixado |
 
 ![Corredor de saída](docs/images/corredor.png)
 
