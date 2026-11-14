@@ -34,6 +34,8 @@ namespace EscapeRoomVR.EditorTools
             public const string IndicatorRed = "M_IndicatorRed";
             public const string IndicatorGreen = "M_IndicatorGreen";
             public const string Key = "M_KeypadKey";
+            public const string Lamp = "M_Lamp";
+            public const string Trim = "M_Trim";
         }
 
         /// <summary>Garante que todos os materiais existam no projeto.</summary>
@@ -56,6 +58,12 @@ namespace EscapeRoomVR.EditorTools
             Get(Names.Rubber, new Color(0.10f, 0.10f, 0.11f), 0f, 0.20f);
             Get(Names.Canvas, new Color(0.35f, 0.30f, 0.45f), 0f, 0.12f);
             Get(Names.Key, new Color(0.80f, 0.82f, 0.85f), 0.20f, 0.50f);
+            Get(Names.Trim, new Color(0.30f, 0.28f, 0.26f), 0f, 0.20f);
+
+            // Placa da luminaria: emissiva, para a fonte da luz ser visivel no
+            // teto. Sem isso a sala parece iluminada por nada.
+            Get(Names.Lamp, new Color(0.95f, 0.93f, 0.85f), 0f, 0.3f,
+                new Color(1f, 0.96f, 0.88f) * 2.2f);
 
             // Materiais que acendem: emissao ligada para servirem de indicador.
             Get(Names.PanelGlow, new Color(0.05f, 0.35f, 0.40f), 0f, 0.6f,

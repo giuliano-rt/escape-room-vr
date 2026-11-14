@@ -104,6 +104,8 @@ namespace EscapeRoomVR.EditorTools
             BuildHud();
             BuildEndScreen();
 
+            AddFeedbackToEveryInteractable();
+
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene, ScenePath);
             RegisterSceneInBuildSettings();
@@ -135,18 +137,39 @@ namespace EscapeRoomVR.EditorTools
 
             // Quatro luminarias no teto, cobrindo os quatro quadrantes da sala.
             // Sao luzes pontuais, e nao uma direcional, porque a sala e fechada:
-            // uma direcional nao teria de onde "entrar".
-            CreatePointLight(root, new Vector3(-1.7f, 2.6f, -1.7f),
-                new Color(1f, 0.97f, 0.92f), 4.5f, 8f, LightShadows.Hard);
+            // uma direcional nao teria de onde "entrar". Cada uma ganha uma
+            // placa emissiva, para a fonte da luz aparecer no teto em vez de a
+            // sala parecer iluminada por nada.
+            var lampPositions = new[]
+            {
+                new Vector3(-1.7f, 2.6f, -1.7f),
+                new Vector3(1.7f, 2.6f, -1.7f),
+                new Vector3(-1.7f, 2.6f, 1.7f),
+                new Vector3(1.7f, 2.6f, 1.7f)
+            };
 
-            CreatePointLight(root, new Vector3(1.7f, 2.6f, -1.7f),
-                new Color(1f, 0.97f, 0.92f), 4.5f, 8f, LightShadows.None);
+            var lampMat = MaterialLibrary.Get(MaterialLibrary.Names.Lamp);
+            var trimMat = MaterialLibrary.Get(MaterialLibrary.Names.Trim);
 
-            CreatePointLight(root, new Vector3(-1.7f, 2.6f, 1.7f),
-                new Color(1f, 0.97f, 0.92f), 4.5f, 8f, LightShadows.None);
+            for (int i = 0; i < lampPositions.Length; i++)
+            {
+                var position = lampPositions[i];
 
-            CreatePointLight(root, new Vector3(1.7f, 2.6f, 1.7f),
-                new Color(1f, 0.97f, 0.92f), 4.5f, 8f, LightShadows.Hard);
+                // So duas das quatro projetam sombra: sombra em tempo real e o
+                // item mais caro da cena no Quest, e quatro fontes deixariam a
+                // sala cheia de sombras cruzadas sem ganho de leitura.
+                CreatePointLight(root, position, new Color(1f, 0.97f, 0.92f), 4.5f, 8f,
+                    i == 0 || i == 3 ? LightShadows.Hard : LightShadows.None);
+
+                var fixture = SceneBuildUtils.Empty($"Lamp {i + 1}", root,
+                    new Vector3(position.x, RoomHeight - 0.02f, position.z)).transform;
+
+                SceneBuildUtils.Box("Glow", fixture, Vector3.zero,
+                    new Vector3(0.8f, 0.03f, 0.8f), lampMat, keepCollider: false);
+
+                SceneBuildUtils.Box("Frame", fixture, new Vector3(0f, 0.02f, 0f),
+                    new Vector3(0.9f, 0.04f, 0.9f), trimMat, keepCollider: false);
+            }
 
             // A parede norte fica longe das quatro luminarias, e e justamente
             // onde estao a porta final e o leitor de cartao.
@@ -229,6 +252,43 @@ namespace EscapeRoomVR.EditorTools
             SceneBuildUtils.Box("Wall North Lintel", root,
                 new Vector3(0f, DoorHeight + (RoomHeight - DoorHeight) * 0.5f, outerZ),
                 new Vector3(DoorHalfWidth * 2f, RoomHeight - DoorHeight, WallThickness), wallMat);
+
+            BuildBaseboards(root, sideWidth, sideCenterX);
+        }
+
+        /// <summary>
+        /// Rodapé em volta da sala. É geometria barata e sem colisor, mas é o
+        /// que separa visualmente a parede do chão: sem essa linha, os dois
+        /// planos se encontram num canto duro e o ambiente lê como uma caixa
+        /// em vez de um cômodo.
+        /// </summary>
+        private static void BuildBaseboards(Transform root, float sideWidth, float sideCenterX)
+        {
+            var trimMat = MaterialLibrary.Get(MaterialLibrary.Names.Trim);
+
+            const float height = 0.12f;
+            const float depth = 0.03f;
+            float y = height * 0.5f;
+            float inner = RoomHalfX - depth * 0.5f;
+
+            SceneBuildUtils.Box("Baseboard West", root, new Vector3(-inner, y, 0f),
+                new Vector3(depth, height, RoomHalfZ * 2f), trimMat, keepCollider: false);
+
+            SceneBuildUtils.Box("Baseboard East", root, new Vector3(inner, y, 0f),
+                new Vector3(depth, height, RoomHalfZ * 2f), trimMat, keepCollider: false);
+
+            SceneBuildUtils.Box("Baseboard South", root, new Vector3(0f, y, -(RoomHalfZ - depth * 0.5f)),
+                new Vector3(RoomHalfX * 2f, height, depth), trimMat, keepCollider: false);
+
+            // A parede norte tem o vao da porta no meio, entao o rodape dela
+            // acompanha os dois trechos laterais.
+            SceneBuildUtils.Box("Baseboard North Left", root,
+                new Vector3(-sideCenterX, y, RoomHalfZ - depth * 0.5f),
+                new Vector3(sideWidth, height, depth), trimMat, keepCollider: false);
+
+            SceneBuildUtils.Box("Baseboard North Right", root,
+                new Vector3(sideCenterX, y, RoomHalfZ - depth * 0.5f),
+                new Vector3(sideWidth, height, depth), trimMat, keepCollider: false);
         }
 
         /// <summary>Corredor curto depois da porta, para o jogador poder sair de verdade.</summary>
@@ -876,7 +936,7 @@ namespace EscapeRoomVR.EditorTools
                 "Procure algo escrito na sala.", 40f, new Color(0.95f, 0.92f, 0.70f));
 
             var progress = CreateUiText(canvasRect, "Progress", new Vector2(0f, 38f), new Vector2(860f, 48f),
-                "Enigmas: 0/5", 32f, new Color(0.70f, 0.78f, 0.85f));
+                $"Enigmas: 0/{PuzzleProgress.RequiredStepCount}", 32f, new Color(0.70f, 0.78f, 0.85f));
 
             // Painel de pista: aparece so quando o jogador le algo de perto.
             var cluePanel = new GameObject("Clue Panel");
@@ -1032,6 +1092,32 @@ namespace EscapeRoomVR.EditorTools
         {
             var area = floor.AddComponent<TeleportationArea>();
             area.interactionLayers = 1 << TeleportInteractionLayer;
+        }
+
+        /// <summary>
+        /// Dá realce ao mirar e som ao pegar a tudo que for interativo.
+        ///
+        /// Feito numa passada só, no fim, em vez de item por item: é um
+        /// comportamento que vale para qualquer interativo da sala, e varrer a
+        /// cena garante que nada novo fique de fora por esquecimento.
+        /// </summary>
+        private static void AddFeedbackToEveryInteractable()
+        {
+            var interactables = Object.FindObjectsByType<XRBaseInteractable>(
+                FindObjectsInactive.Include, FindObjectsSortMode.None);
+
+            foreach (var interactable in interactables)
+            {
+                var target = interactable.gameObject;
+
+                if (target.GetComponent<InteractableFeedback>() != null)
+                    continue;
+
+                var feedback = target.AddComponent<InteractableFeedback>();
+                SceneBuildUtils.SetField(feedback, "audioCue", AddAudioCue(target));
+            }
+
+            Debug.Log($"[EscapeRoomSceneBuilder] Feedback aplicado a {interactables.Length} objetos interativos.");
         }
 
         private static AudioCue AddAudioCue(GameObject go)
